@@ -54,7 +54,8 @@ class Charging_Station(Element):
 ############################## Other Elements ################################
 ##############################################################################
 class Vehicle:
-    def __init__(self, manager, owner, type_of_contract, type_of_vehicle, energy_capacity_max_kWh, p_charge_max_kW, p_discharge_max_kW, charge_efficiency_percent, discharge_efficiency_percent, initial_state_SOC_percent, minimun_technical_SOC_percent):
+    def __init__(self, id, manager, owner, type_of_contract, type_of_vehicle, energy_capacity_max_kWh, p_charge_max_kW, p_discharge_max_kW, charge_efficiency_percent, discharge_efficiency_percent, initial_state_SOC_percent, minimun_technical_SOC_percent):
+        self.id = id
         self.manager = manager
         self.owner = owner
         self.type_of_contract = type_of_contract
@@ -66,6 +67,20 @@ class Vehicle:
         self.discharge_efficiency_percent = discharge_efficiency_percent
         self.initial_state_SOC_percent = initial_state_SOC_percent
         self.minimun_technical_SOC_percent = minimun_technical_SOC_percent
+    def set_profile(self, arrive_time_period=None, departure_time_period=None,
+                    place=None, used_soc_percent_arriving=None, soc_percent_arriving=None,
+                    soc_required_percent_exit=None, p_charge_max_constracted_kw=None,
+                    p_discharge_max_constracted_kw=None, charge_price=None, discharge_price=None):
+        self.arrive_time_period = arrive_time_period
+        self.departure_time_period = departure_time_period
+        self.place = place
+        self.used_soc_percent_arriving = used_soc_percent_arriving
+        self.soc_percent_arriving = soc_percent_arriving
+        self.soc_required_percent_exit = soc_required_percent_exit
+        self.p_charge_max_constracted_kw = p_charge_max_constracted_kw
+        self.p_discharge_max_constracted_kw = p_discharge_max_constracted_kw
+        self.charge_price = charge_price
+        self.discharge_price = discharge_price
 # class peers, which containts the properties: type_of_peer, type_of_contract, owner.
 class Peer:
     def __init__(self, id, type_of_peer, type_of_contract):
@@ -73,13 +88,12 @@ class Peer:
         self.type_of_peer = type_of_peer
         self.type_of_contract = type_of_contract
     # Property method that sets the buy_price_mu and sell_price_mu
-    def set_buy_sell_prices(self, buy_price_mu, sell_price_mu):
+    def set_profile(self, buy_price_mu=None, sell_price_mu=None):
         self.buy_price_mu = buy_price_mu
         self.sell_price_mu = sell_price_mu
 ##############################################################################
 ############################## Data: Full Excell #############################
 ##############################################################################
-
 # class Data constains the properties: simulation_periods, periods_duration_min, objective_functions_list, a dict called network_information, a list of objects of the class Vehicle, a list of objects of the class Load, a list of objects of the class Generator, a list of objects of the class Storage, a list of objects of the class Charging_Station, a list of objects of the class Peer.
 class Data:
     def __init__(self, simulation_periods, periods_duration_min, objective_functions_list, network_information, vehicle_list, load_list, generator_list, storage_list, charging_station_list, peer_list):
