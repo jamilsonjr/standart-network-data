@@ -2,6 +2,7 @@
 import pandas as pd
 import os
 import classes
+import re
 # this part goes do main.py
 # Excel file location
 file_loacation = 'data/raw/Data_Example.xlsx'
@@ -202,14 +203,54 @@ class Extractor:
         'charge_price': charge_price,
         'discharge_price': discharge_price
         }
-        return vehicles_static_info_df, vehicles_dynamic_info
-        
-         
-# Create instance of the class Extrator
+        return vehicles_static_info_df, vehicles_dynamic_info        
+#%% Create instance of the class Extrator
 extractor = Extractor()
 peers = extractor.create_peers_list(raw_peers_info_sheet)
-
-#%%
-vehicles_static_info_df, vehicles_dynamic_info = extractor.create_vehicles_info(raw_vehicle_sheet)
-#%%
 vehicles = extractor.create_vehicles_list(raw_vehicle_sheet)
+#%% 
+# function parameter:
+df = raw_vehicle_sheet
+# Get static info names from raw_generator_sheet.
+# Get all values of the column 'Unnamed: 2', remove empty values, removed duplicate values, and convert to list.
+static_info_names = df['Unnamed: 2'].dropna().unique().tolist()
+static_info_names[0] = df.columns[0]
+# Get the index of the column 'Total Time (h)' in the list of column names
+# Get all values of the column 'Total Time (h)', remove empty values, removed duplicate values, and convert to list.
+if static_info_names[0] == 'Electric Vehicle ID': 
+    dynamic_info_names = df['Unnamed: 5'].dropna().unique().tolist()
+    dynamic_info_names[:2] = []
+else:    
+    dynamic_info_names = df['Total Time (h)'].dropna().unique().tolist()
+    dynamic_info_names[:2] = []
+
+# Static Data
+info_dict = {}
+# iterate through the static_info_names and for each name create a new dataframe with info extracted from the raw information sheets.
+for i, static_info_name in enumerate(static_info_names):
+    if i == 0: # The the ID
+        # Create the new dataframe with the extracted information.
+        # Substitute space by underscore in the name of the column.
+        _df_name = static_info_name.lower().replace(' ', '_') 
+        info_dict[_df_name] = pd.DataFrame()
+        info_dict[_df_name] = df[static_info_names[0]].filter(regex='^\d+$').dropna().drop(1).reset_index(drop=True).rename(re.sub('[^0-9a-zA-Z]+', '_', static_info_name).rstrip('_'))
+    else: # The rest of the static info
+        # All characters of _df_name are converted to lower case, all charaters that are not numbers or letters are removed, all white spaces are replaced by underscores, and if the last character is an underscore, it is removed.
+        _df_name = re.sub('[^0-9a-zA-Z]+', '_', static_info_name).rstrip('_').lower()
+        info_dict[_df_name] = pd.DataFrame()
+        info_dict[_df_name] = df[df['Unnamed: 2'].str.contains(static_info_name.split('(')[0]).fillna(False)]['Unnamed: 3'].reset_index().drop(['index'], axis=1).rename(columns={'Unnamed: 3': _df_name})   
+# Dynamic Data
+if static_info_names[0] == 'Electric Vehicle ID':
+    total_time_index = df.columns.get_loc('Unnamed: 5')
+else:
+    total_time_index = df.columns.get_loc('Total Time (h)')
+# Get the indexes of all the columns after 'Total Time (h)'.
+# This will be used to get the values of the columns that we want to keep
+# and store themss in a list.
+columns_to_keep_profiles = df.columns[total_time_index+1:].tolist() 
+for dynamic_info_name in dynamic_info_names:
+    _dynamic_info_name = dynamic_info_name.replace('.', '')
+    _df_name = re.sub('[^0-9a-zA-Z]+', '_', _dynamic_info_name).rstrip('_').lower()
+    info_dict[_df_name] = pd.DataFrame()
+    info_dict[_df_name] = df[df.iloc[:,5].apply(lambda x: x  == dynamic_info_name)].iloc[:][columns_to_keep_profiles].reset_index(drop=True) 
+# %%
