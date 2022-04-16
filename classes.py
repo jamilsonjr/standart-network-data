@@ -1,76 +1,112 @@
 #%%
+from abc import ABC, abstractmethod
 ##############################################################################
 ############################## Element Types #################################
 ##############################################################################
 
 # Element classses from the excel file
-class Element:
-    def __init__(self, internal_bus_location, manager, owner, type_of_contract):
+class Element(ABC):
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract):
+        self.id = id
         self.internal_bus_location = internal_bus_location
         self.manager = manager
         self.owner = owner
         self.type_of_contract = type_of_contract
-
+    @abstractmethod
+    def set_profile(self):
+        pass
 # class Load extends Element class and adds the values of: load, charge type, power contracted, power factor.
 class Load(Element):
-    def __init__(self, internal_bus_location, manager, owner, type_of_contract, load, charge_type, power_contracted, power_factor):
-        super().__init__(internal_bus_location, manager, owner, type_of_contract)
-        self.load = load
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, charge_type, power_contracted_kw, power_factor):
+        super().__init__(id, internal_bus_location, manager, owner, type_of_contract)
         self.charge_type = charge_type
-        self.power_contracted = power_contracted
+        self.power_contracted_kw = power_contracted_kw
         self.power_factor = power_factor
-# class Generator extends Element class and adds the values of: type_of_generator, P_max_kW, Q_max_kW, Q_min_kW.
+    def set_profile(self,
+                    p_forecast_kw=None,
+                    q_forecast_kvar=None,
+                    p_reduce_kw=None,
+                    p_cut_kw=None,
+                    p_move_kw=None,
+                    p_in_move_kw=None,
+                    cost_reduce_mu=None,
+                    cost_cut_mu=None,
+                    cost_mov_mu=None,
+                    cost_ens_mu=None):
+        pass
+    
+# class Generator extends Element class and adds the values of: type_of_generator, p_max_kw, q_max_kw, q_min_kw.
 class Generator(Element):
-    def __init__(self, internal_bus_location, manager, owner, type_of_contract, type_of_generator, P_max_kW, Q_max_kW, Q_min_kW):
-        super().__init__(internal_bus_location, manager, owner, type_of_contract)
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, type_of_generator, p_max_kw, p_min_kw, q_max_kw, q_min_kw):
+        super().__init__(id, internal_bus_location, manager, owner, type_of_contract)
         self.type_of_generator = type_of_generator
-        self.P_max_kW = P_max_kW
-        self.Q_max_kW = Q_max_kW
-        self.Q_min_kW = Q_min_kW
-# class Storage extends Element class and adds the values of: battery_type, energy_capacity_kVAh, energy_min_percent, charge_efficiency_percent, discharge_efficiency_percent, initial_state_percent, p_charge_max_kW, p_discharge_max_kW.
+        self.p_max_kw = p_max_kw
+        self.p_min_kw = p_min_kw
+        self.q_max_kw = q_max_kw
+        self.q_min_kw = q_min_kw
+    def set_profile(self, power_forecast_kw=None, cost_parameter_a_mu=None, cost_parameter_b_mu=None, cost_parameter_c_mu=None, cost_nde_mu=None, ghg_cof_a_mu=None, ghg_cof_b_mu=None, ghg_cof_c_mu=None):
+        self.power_forecast_kw = power_forecast_kw
+        self.cost_parameter_a_mu = cost_parameter_a_mu
+        self.cost_parameter_b_mu = cost_parameter_b_mu
+        self.cost_parameter_c_mu = cost_parameter_c_mu
+        self.cost_nde_mu = cost_nde_mu
+        self.ghg_cof_a_mu = ghg_cof_a_mu
+        self.ghg_cof_b_mu = ghg_cof_b_mu
+        self.ghg_cof_c_mu = ghg_cof_c_mu    
+# class Storage extends Element class and adds the values of: battery_type, energy_capacity_kVAh, energy_min_percent, charge_efficiency_percent, discharge_efficiency_percent, initial_state_percent, p_charge_max_kw, p_discharge_max_kw.
 class Storage(Element):
-    def __init__(self, internal_bus_location, manager, owner, type_of_contract, battery_type, energy_capacity_kVAh, energy_min_percent, charge_efficiency_percent, discharge_efficiency_percent, initial_state_percent, p_charge_max_kW, p_discharge_max_kW):
-        super().__init__(internal_bus_location, manager, owner, type_of_contract)
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, battery_type, energy_capacity_kvah, energy_min_percent, charge_efficiency_percent, discharge_efficiency_percent, initial_state_percent, p_charge_max_kw, p_discharge_max_kw):
+        super().__init__(id, internal_bus_location, manager, owner, type_of_contract)
         self.battery_type = battery_type
-        self.energy_capacity_kVAh = energy_capacity_kVAh
+        self.energy_capacity_kvah = energy_capacity_kvah
         self.energy_min_percent = energy_min_percent
         self.charge_efficiency_percent = charge_efficiency_percent
         self.discharge_efficiency_percent = discharge_efficiency_percent
         self.initial_state_percent = initial_state_percent
-        self.p_charge_max_kW = p_charge_max_kW
-        self.p_discharge_max_kW = p_discharge_max_kW
-# class Chargring_Station extends Element class and adds the values of:, p_charge_max_kW, p_discharge_max_kW, charge_efficiency_percent, discharge_efficienc_percent, energy_capacity_max_kWh, place_start, place_end.
+        self.p_charge_max_kw = p_charge_max_kw
+        self.p_discharge_max_kw = p_discharge_max_kw
+    def set_profile(self, power_charge_limit_kw=None, power_discharge_limit_kw=None, charge_price_mu=None, discharge_price_mu=None):
+        self.power_charge_limit_kw = power_charge_limit_kw
+        self.power_discharge_limit_kw = power_discharge_limit_kw
+        self.charge_price_mu = charge_price_mu
+        self.discharge_price_mu = discharge_price_mu
+# class Chargring_Station extends Element class and adds the values of:, p_charge_max_kw, p_discharge_max_kw, charge_efficiency_percent, discharge_efficienc_percent, energy_capacity_max_kwh, place_start, place_end.
 class Charging_Station(Element):
-    def __init__(self, internal_bus_location, manager, owner, type_of_contract, p_charge_max_kW, p_discharge_max_kW, charge_efficiency_percent, discharge_efficiency_percent, energy_capacity_max_kWh, place_start, place_end):
-        super().__init__(internal_bus_location, manager, owner, type_of_contract)
-        self.p_charge_max_kW = p_charge_max_kW
-        self.p_discharge_max_kW = p_discharge_max_kW
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, p_charge_max_kw, p_discharge_max_kw, charge_efficiency_percent, discharge_efficiency_percent, energy_capacity_max_kwh, place_start, place_end):
+        super().__init__(id, internal_bus_location, manager, owner, type_of_contract)
+        self.p_charge_max_kw = p_charge_max_kw
+        self.p_discharge_max_kw = p_discharge_max_kw
         self.charge_efficiency_percent = charge_efficiency_percent
         self.discharge_efficiency_percent = discharge_efficiency_percent
-        self.energy_capacity_max_kWh = energy_capacity_max_kWh
+        self.energy_capacity_max_kwh = energy_capacity_max_kwh
         self.place_start = place_start
         self.place_end = place_end
+    # Override the method set_profile, setting the profiles of power_charge_limit_kw and p_discharge_limit_kw.
+    def set_profile(self, power_charge_limit_kw=None, p_discharge_limit_kw=None):
+        self.power_charge_limit_kw = power_charge_limit_kw
+        self.p_discharge_limit_kw = p_discharge_limit_kw
 ##############################################################################
 ############################## Other Elements ################################
 ##############################################################################
 class Vehicle:
-    def __init__(self, id, manager, owner, type_of_contract, type_of_vehicle, energy_capacity_max_kWh, p_charge_max_kW, p_discharge_max_kW, charge_efficiency_percent, discharge_efficiency_percent, initial_state_SOC_percent, minimun_technical_SOC_percent):
+    def __init__(self, id, manager, owner, type_of_contract, type_of_vehicle, energy_capacity_max_kwh, p_charge_max_kw, p_discharge_max_kw, charge_efficiency_percent, discharge_efficiency_percent, initial_state_SOC_percent, minimun_technical_SOC_percent):
         self.id = id
         self.manager = manager
         self.owner = owner
         self.type_of_contract = type_of_contract
         self.type_of_vehicle = type_of_vehicle
-        self.energy_capacity_max_kWh = energy_capacity_max_kWh
-        self.p_charge_max_kW = p_charge_max_kW
-        self.p_discharge_max_kW = p_discharge_max_kW
+        self.energy_capacity_max_kwh = energy_capacity_max_kwh
+        self.p_charge_max_kw = p_charge_max_kw
+        self.p_discharge_max_kw = p_discharge_max_kw
         self.charge_efficiency_percent = charge_efficiency_percent
         self.discharge_efficiency_percent = discharge_efficiency_percent
         self.initial_state_SOC_percent = initial_state_SOC_percent
         self.minimun_technical_SOC_percent = minimun_technical_SOC_percent
-    def set_profile(self, arrive_time_period=None, departure_time_period=None,
-                    place=None, used_soc_percent_arriving=None, soc_percent_arriving=None,
-                    soc_required_percent_exit=None, p_charge_max_constracted_kw=None,
-                    p_discharge_max_constracted_kw=None, charge_price=None, discharge_price=None):
+    def set_profile(
+        self, arrive_time_period=None, departure_time_period=None,
+        place=None, used_soc_percent_arriving=None, soc_percent_arriving=None,
+        soc_required_percent_exit=None, p_charge_max_constracted_kw=None,
+        p_discharge_max_constracted_kw=None, charge_price=None, discharge_price=None):
         self.arrive_time_period = arrive_time_period
         self.departure_time_period = departure_time_period
         self.place = place
