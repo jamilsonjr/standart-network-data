@@ -3,7 +3,6 @@ from abc import ABC, abstractmethod
 ##############################################################################
 ############################## Element Types #################################
 ##############################################################################
-
 # Element classses from the excel file
 class Element(ABC):
     def __init__(self, id, internal_bus_location, manager, owner, type_of_contract):
@@ -33,7 +32,16 @@ class Load(Element):
                     cost_cut_mu=None,
                     cost_mov_mu=None,
                     cost_ens_mu=None):
-        pass
+        self.p_forecast_kw = p_forecast_kw
+        self.q_forecast_kvar = q_forecast_kvar
+        self.p_reduce_kw = p_reduce_kw
+        self.p_cut_kw = p_cut_kw
+        self.p_move_kw = p_move_kw
+        self.p_in_move_kw = p_in_move_kw
+        self.cost_reduce_mu = cost_reduce_mu
+        self.cost_cut_mu = cost_cut_mu
+        self.cost_mov_mu = cost_mov_mu
+        self.cost_ens_mu = cost_ens_mu
     
 # class Generator extends Element class and adds the values of: type_of_generator, p_max_kw, q_max_kw, q_min_kw.
 class Generator(Element):
@@ -131,12 +139,15 @@ class Peer:
 ############################## Data: Full Excell #############################
 ##############################################################################
 # class Data constains the properties: simulation_periods, periods_duration_min, objective_functions_list, a dict called network_information, a list of objects of the class Vehicle, a list of objects of the class Load, a list of objects of the class Generator, a list of objects of the class Storage, a list of objects of the class Charging_Station, a list of objects of the class Peer.
-class Data:
-    def __init__(self, simulation_periods, periods_duration_min, objective_functions_list, network_information, vehicle_list, load_list, generator_list, storage_list, charging_station_list, peer_list):
+class Network:
+    def __init__(
+        self, simulation_periods=None, periods_duration_min=None, objective_functions_list=None,
+        network_information_dict=None, vehicle_list=None, load_list=None, generator_list=None,
+        storage_list=None, charging_station_list=None, peer_list=None):
         self.simulation_periods = simulation_periods
         self.periods_duration_min = periods_duration_min
         self.objective_functions_list = objective_functions_list
-        self.network_information = network_information
+        self.network_information_dict = network_information_dict
         self.vehicle_list = vehicle_list
         self.load_list = load_list
         self.generator_list = generator_list

@@ -165,7 +165,6 @@ class Extractor:
             )
             generators.append(new_generator)
         return generators
-    # Method that creates a of class object of Storage from the raw_storage_sheet. The properties form the object come from the df keys.
     def create_storages_list(self, df):
         """Function that creates the list of storages from the raw_storage_sheet.
 
@@ -265,6 +264,13 @@ class Extractor:
         _dict = { self.format_string(column): df.iloc[12:,i].dropna().tolist() for i, column in enumerate(columns)}
         network_info[df_title] = pd.DataFrame(_dict)
         return network_info
+    def create_simulation_periods(self, df):
+        return df[df['Unnamed: 2'] == 'Simulation Periods']['Unnamed: 3'].values[0]
+    def create_periods_duration_min(self, df):
+        return df[df['Unnamed: 2'] == 'Periods Duration (min)']['Unnamed: 3'].values[0]
+    def create_objective_functions_list(self, df):
+        columns = df['Unnamed: 6'].dropna().tolist()
+        return pd.DataFrame({column : [i+1] for i, column in enumerate(columns)})
     ############################# Aux Functions ###################################
     # Extract useful info from the raw_peer_info_sheet into a new dataframe.
     def organize_raw_data(self, df):
@@ -321,15 +327,5 @@ class Extractor:
         return info_dict
     def format_string(self, string):
         return re.sub('[^0-9a-zA-Z]+', '_', string).rstrip('_').lower()
-# Create instance of the class Extrator
-extractor = Extractor()
-peers = extractor.create_peers_list(raw_peers_sheet)
-vehicles = extractor.create_vehicles_list(raw_vehicle_sheet)
-charging_staions = extractor.create_charging_stations_list(raw_charging_station_sheet)
-generators = extractor.create_generators_list(raw_generator_sheet)
-storages = extractor.create_storages_list(raw_storage_sheet)
-loads = extractor.create_loads_list(raw_load_sheet)
-network_info = extractor.create_network_info_dict(raw_network_info_sheet)
-#%% Cable Carachteristics ask questions
+# Cable Carachteristics ask questions
 # Note: When finish last sheet, ask the prof about the last sheets
-# %%
