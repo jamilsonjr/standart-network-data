@@ -16,11 +16,11 @@ class Element(ABC):
         pass
 # class Load extends Element class and adds the values of: load, charge type, power contracted, power factor.
 class Load(Element):
-    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, charge_type, power_contracted_kw, power_factor):
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, charge_type, power_contracted_kw, tg_phi):
         super().__init__(id, internal_bus_location, manager, owner, type_of_contract)
         self.charge_type = charge_type
         self.power_contracted_kw = power_contracted_kw
-        self.power_factor = power_factor
+        self.tg_phi = tg_phi        
     def set_profile(self,
                     p_forecast_kw=None,
                     q_forecast_kvar=None,
@@ -42,16 +42,15 @@ class Load(Element):
         self.cost_cut_mu = cost_cut_mu
         self.cost_mov_mu = cost_mov_mu
         self.cost_ens_mu = cost_ens_mu
-    
 # class Generator extends Element class and adds the values of: type_of_generator, p_max_kw, q_max_kw, q_min_kw.
 class Generator(Element):
-    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, type_of_generator, p_max_kw, p_min_kw, q_max_kw, q_min_kw):
+    def __init__(self, id, internal_bus_location, manager, owner, type_of_contract, type_of_generator, p_max_kw, p_min_kw, q_max_kvar, q_min_kvar):
         super().__init__(id, internal_bus_location, manager, owner, type_of_contract)
         self.type_of_generator = type_of_generator
         self.p_max_kw = p_max_kw
         self.p_min_kw = p_min_kw
-        self.q_max_kw = q_max_kw
-        self.q_min_kw = q_min_kw
+        self.q_max_kvar = q_max_kvar
+        self.q_min_kvar = q_min_kvar
     def set_profile(self, power_forecast_kw=None, cost_parameter_a_mu=None, cost_parameter_b_mu=None, cost_parameter_c_mu=None, cost_nde_mu=None, ghg_cof_a_mu=None, ghg_cof_b_mu=None, ghg_cof_c_mu=None):
         self.power_forecast_kw = power_forecast_kw
         self.cost_parameter_a_mu = cost_parameter_a_mu
@@ -135,6 +134,14 @@ class Peer:
     def set_profile(self, buy_price_mu=None, sell_price_mu=None):
         self.buy_price_mu = buy_price_mu
         self.sell_price_mu = sell_price_mu
+# class info, which contains the properties: branch_info, bus_reference, voltage_limits, pu_values and cables_characteristics.
+class Info:
+    def __init__(self, branch_info=None, bus_reference=None, voltage_limits=None, pu_values=None, cables_characteristics=None):
+        self.branch_info = branch_info
+        self.bus_reference = bus_reference
+        self.voltage_limits = voltage_limits
+        self.pu_values = pu_values
+        self.cables_characteristics = cables_characteristics
 ##############################################################################
 ############################## Data: Full Excell #############################
 ##############################################################################
@@ -142,12 +149,12 @@ class Peer:
 class Network:
     def __init__(
         self, simulation_periods=None, periods_duration_min=None, objective_functions_list=None,
-        network_information_dict=None, vehicle_list=None, load_list=None, generator_list=None,
+        info=None, vehicle_list=None, load_list=None, generator_list=None,
         storage_list=None, charging_station_list=None, peer_list=None):
         self.simulation_periods = simulation_periods
         self.periods_duration_min = periods_duration_min
         self.objective_functions_list = objective_functions_list
-        self.network_information_dict = network_information_dict
+        self.info = info
         self.vehicle_list = vehicle_list
         self.load_list = load_list
         self.generator_list = generator_list

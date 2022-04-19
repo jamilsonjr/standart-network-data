@@ -3,6 +3,7 @@ import pandas as pd
 import os
 from classes import Network
 from extractor import Extractor
+import pandapower as pp
 # def main():
 #     # Excel file location
 #     file_location = 'data/raw/Data_Example.xlsx'
@@ -65,13 +66,12 @@ raw_network_info_sheet = pd.read_excel(os.getcwd() + '\\' + file_location, sheet
 raw_general_information_sheet = pd.read_excel(os.getcwd() + '\\' + file_location, sheet_name='General_Information')
 # Extract useful info from the raw dataframes.
 extractor = Extractor()
-#%%
 # Create network object
 network = Network(
     simulation_periods = extractor.create_simulation_periods(raw_general_information_sheet),
     periods_duration_min = extractor.create_periods_duration_min(raw_general_information_sheet),
     objective_functions_list = extractor.create_objective_functions_list(raw_general_information_sheet),
-    network_information_dict = extractor.create_network_info_dict(raw_network_info_sheet),
+    info = extractor.create_network_info(raw_network_info_sheet),
     vehicle_list = extractor.create_vehicles_list(raw_vehicle_sheet),
     load_list = extractor.create_loads_list(raw_load_sheet),
     generator_list = extractor.create_generators_list(raw_generator_sheet),
@@ -80,6 +80,33 @@ network = Network(
     peer_list = extractor.create_peers_list(raw_peers_sheet)
 )
 # %% Doing now
-# Create pandapower network
+# create pandapower network
+# Create empty network.
+net = pp.create_empty_network()
+# Create the busses.
+branch_info = network.info.branch_info
+for bus_num in branch_info.component_n.values:
+    pp.create_bus(net, vn_kv=20.0, index=bus_num)
+# External grid.
+pp.create_ext_grid(net, bus=1, vm_pu=1.0)
+# Create tge loads from network.load_list.
+for i, load in enumerate(network.load_list):
+    name = load.id
+    bus = load.internal_bus_location
+    p_mw = load.power_contracted_kw / 1000
+    q_mvar  = p_mw * load.tg_phi
+    pp.create_load(net, bus=bus, p_mw=p_mw, q_mvar=q_mvar, name=name)
+# Create generators from network.generator_list.
+for i, generator in enumerate(network.generator_list):
+    bus = generator.internal_bus_location
+    p_mw = generator.p_max_kw / 1000
+    q_mvar = generator.q_max_kvar / 1000
+    pp.create_sgen(net, bus=bus, p_mw=p_mw, q_mvar=q_mvar, name=name)    
+# Create the storage from network.storage_list.
+for i, storage in enumerate(network.storage_list):
+    bus = storage.internal_bus_location
+    p_mw = storage.p_charge_max_kw / 1000
+    max_e_mwh = storage.energy_capacity_kvah / 1000
+    pp.create_storage(net, bus=bus, p_mw=p_mw, max_e_mwh=max_e_mwh, name=name)
 #%%
 # Merge info sheet to general info shee

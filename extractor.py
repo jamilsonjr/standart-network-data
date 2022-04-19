@@ -45,8 +45,8 @@ class Extractor:
         for i in range(len(peers_info['peer_id'])):
             new_peer = classes.Peer(
                 id=peers_info['peer_id'].loc[i],
-                type_of_peer=peers_info['type_of_peer'].loc[i],
-                type_of_contract=peers_info['type_of_contract'].loc[i]
+                type_of_peer=peers_info['type_of_peer'].loc[i].values[0],
+                type_of_contract=peers_info['type_of_contract'].loc[i].values[0]
                 )
             new_peer.set_profile(
                 buy_price_mu=peers_info['buy_price_mu'].loc[i],
@@ -69,17 +69,17 @@ class Extractor:
         for i in range(len(vehicles_info['electric_vehicle_id'])):
             new_vehicle = classes.Vehicle(
                 id=vehicles_info['electric_vehicle_id'].loc[i],
-                owner=vehicles_info['owner'].loc[i],
-                manager=vehicles_info['manager'].loc[i],
-                type_of_vehicle=vehicles_info['type_of_vehicle'].loc[i],
-                type_of_contract=vehicles_info['type_of_contract'].loc[i],
-                energy_capacity_max_kwh=vehicles_info['e_capacity_max_kwh'].loc[i],
-                p_charge_max_kw=vehicles_info['p_charge_max_kw'].loc[i],
-                p_discharge_max_kw=vehicles_info['p_discharge_max_kw'].loc[i],
-                charge_efficiency_percent=vehicles_info['charge_efficiency'].loc[i],
-                discharge_efficiency_percent=vehicles_info['discharge_efficiency'].loc[i],
-                initial_state_SOC_percent=vehicles_info['initial_state_soc'].loc[i],
-                minimun_technical_SOC_percent=vehicles_info['minimun_technical_soc'].loc[i]
+                owner=vehicles_info['owner'].loc[i].values[0],
+                manager=vehicles_info['manager'].loc[i].values[0],
+                type_of_vehicle=vehicles_info['type_of_vehicle'].loc[i].values[0],
+                type_of_contract=vehicles_info['type_of_contract'].loc[i].values[0],
+                energy_capacity_max_kwh=vehicles_info['e_capacity_max_kwh'].loc[i].values[0],
+                p_charge_max_kw=vehicles_info['p_charge_max_kw'].loc[i].values[0],
+                p_discharge_max_kw=vehicles_info['p_discharge_max_kw'].loc[i].values[0],
+                charge_efficiency_percent=vehicles_info['charge_efficiency'].loc[i].values[0],
+                discharge_efficiency_percent=vehicles_info['discharge_efficiency'].loc[i].values[0],
+                initial_state_SOC_percent=vehicles_info['initial_state_soc'].loc[i].values[0],
+                minimun_technical_SOC_percent=vehicles_info['minimun_technical_soc'].loc[i].values[0]
                 )
             new_vehicle.set_profile(
                 arrive_time_period = vehicles_info['arrive_time_period'].iloc[i],
@@ -110,17 +110,17 @@ class Extractor:
         for i in range(len(charging_stations_info['charging_station_id'])):
             new_charging_station = classes.Charging_Station(
                 id=charging_stations_info['charging_station_id'].loc[i],
-                internal_bus_location=charging_stations_info['internal_bus_location'].loc[i],
-                manager=charging_stations_info['manager'].loc[i],
-                owner=charging_stations_info['owner'].loc[i],
-                type_of_contract=charging_stations_info['type_of_contract'].loc[i],
-                p_charge_max_kw=charging_stations_info['p_charge_max_kw'].loc[i],
-                p_discharge_max_kw=charging_stations_info['p_discharge_max_kw'].loc[i],
-                charge_efficiency_percent=charging_stations_info['charge_efficiency'].loc[i],
-                discharge_efficiency_percent=charging_stations_info['discharge_efficiency'].loc[i],
-                energy_capacity_max_kwh=charging_stations_info['e_capacity_max_kwh'].loc[i],
-                place_start=charging_stations_info['place_start'].loc[i],
-                place_end=charging_stations_info['place_end'].loc[i]
+                internal_bus_location=charging_stations_info['internal_bus_location'].loc[i].values[0],
+                manager=charging_stations_info['manager'].loc[i].values[0],
+                owner=charging_stations_info['owner'].loc[i].values[0],
+                type_of_contract=charging_stations_info['type_of_contract'].loc[i].values[0],
+                p_charge_max_kw=charging_stations_info['p_charge_max_kw'].loc[i].values[0],
+                p_discharge_max_kw=charging_stations_info['p_discharge_max_kw'].loc[i].values[0],
+                charge_efficiency_percent=charging_stations_info['charge_efficiency'].loc[i].values[0],
+                discharge_efficiency_percent=charging_stations_info['discharge_efficiency'].loc[i].values[0],
+                energy_capacity_max_kwh=charging_stations_info['e_capacity_max_kwh'].loc[i].values[0],
+                place_start=charging_stations_info['place_start'].loc[i].values[0],
+                place_end=charging_stations_info['place_end'].loc[i].values[0]
                 )
             new_charging_station.set_profile(
                 power_charge_limit_kw=charging_stations_info['p_charge_limit_kw'].loc[i],
@@ -143,15 +143,15 @@ class Extractor:
         for i in range(len(generators_info['generator_id'])):
             new_generator = classes.Generator(
                 id=generators_info['generator_id'].loc[i],
-                internal_bus_location=generators_info['internal_bus_location'].loc[i],
-                manager=generators_info['manager'].loc[i],
-                owner=generators_info['owner'].loc[i],
-                type_of_contract=generators_info['type_of_contract'].loc[i],
-                type_of_generator=generators_info['type_of_generator'].loc[i],
-                p_max_kw=generators_info['p_max_kw'].loc[i],
-                p_min_kw=generators_info['p_min_kw'].loc[i],
-                q_max_kw=generators_info['q_max_kw'].loc[i],
-                q_min_kw=generators_info['q_min_kw'].loc[i]
+                internal_bus_location=generators_info['internal_bus_location'].loc[i].values[0],
+                manager=generators_info['manager'].loc[i].values[0],
+                owner=generators_info['owner'].loc[i].values[0],
+                type_of_contract=generators_info['type_of_contract'].loc[i].values[0],
+                type_of_generator=generators_info['type_of_generator'].loc[i].values[0],
+                p_max_kw=generators_info['p_max_kw'].loc[i].values[0],
+                p_min_kw=generators_info['p_min_kw'].loc[i].values[0],
+                q_max_kvar=generators_info['q_max_kvar'].loc[i].values[0],
+                q_min_kvar=generators_info['q_min_kvar'].loc[i].values[0]
             )
             new_generator.set_profile(
                 power_forecast_kw=generators_info['p_forecast_kw'].loc[i],
@@ -180,18 +180,18 @@ class Extractor:
         for i in range(len(storages_info['storage_id'])):
             new_storage = classes.Storage(
                 id=storages_info['storage_id'].loc[i],
-                internal_bus_location=storages_info['internal_bus_location'].loc[i],
-                manager=storages_info['manager'].loc[i],
-                owner=storages_info['owner'].loc[i],
-                type_of_contract=storages_info['type_of_contract'].loc[i],
-                battery_type=storages_info['battery_type'].loc[i],
-                energy_capacity_kvah=storages_info['energy_capacity_kvah'].loc[i],
-                energy_min_percent=storages_info['energy_min'].loc[i],
-                charge_efficiency_percent=storages_info['charge_efficiency'].loc[i],
-                discharge_efficiency_percent=storages_info['discharge_efficiency'].loc[i],
-                initial_state_percent=storages_info['initial_state'].loc[i],
-                p_charge_max_kw=storages_info['p_charge_max_kw'].loc[i],
-                p_discharge_max_kw=storages_info['p_discharge_max_kw'].loc[i]
+                internal_bus_location=storages_info['internal_bus_location'].loc[i].values[0],
+                manager=storages_info['manager'].loc[i].values[0],
+                owner=storages_info['owner'].loc[i].values[0],
+                type_of_contract=storages_info['type_of_contract'].loc[i].values[0],
+                battery_type=storages_info['battery_type'].loc[i].values[0],
+                energy_capacity_kvah=storages_info['energy_capacity_kvah'].loc[i].values[0],
+                energy_min_percent=storages_info['energy_min'].loc[i].values[0],
+                charge_efficiency_percent=storages_info['charge_efficiency'].loc[i].values[0],
+                discharge_efficiency_percent=storages_info['discharge_efficiency'].loc[i].values[0],
+                initial_state_percent=storages_info['initial_state'].loc[i].values[0],
+                p_charge_max_kw=storages_info['p_charge_max_kw'].loc[i].values[0],
+                p_discharge_max_kw=storages_info['p_discharge_max_kw'].loc[i].values[0]
                 )
             new_storage.set_profile(
                 power_charge_limit_kw=storages_info['p_charge_limit_kw'].loc[i],
@@ -216,14 +216,14 @@ class Extractor:
         for i in range(len(loads_info['load_id'])):
             new_load = classes.Load(
                 id=loads_info['load_id'].loc[i],
-                internal_bus_location=loads_info['internal_bus_location'].loc[i],
+                internal_bus_location=loads_info['internal_bus_location'].loc[i].values[0],
                 manager=loads_info['manager_id'].loc[i],
                 owner=loads_info['owner_id'].loc[i],
-                type_of_contract=loads_info['type_of_contract'].loc[i],
-                charge_type=loads_info['charge_type'].loc[i],
-                power_contracted_kw=loads_info['p_contracted_kw'].loc[i],
-                power_factor=loads_info['tg_phi'].loc[i],
-            )
+                type_of_contract=loads_info['type_of_contract'].loc[i].values[0],
+                charge_type=loads_info['charge_type'].loc[i].values[0],
+                power_contracted_kw=loads_info['p_contracted_kw'].loc[i].values[0],
+                tg_phi=loads_info['tg_phi'].loc[i].values[0]
+            )            
             new_load.set_profile(
                 p_forecast_kw=loads_info['p_forecast_kw'].loc[i],
                 q_forecast_kvar=loads_info['q_forecast_kvar'].loc[i],
@@ -238,7 +238,7 @@ class Extractor:
             )
             loads.append(new_load)
         return loads
-    def create_network_info_dict(self, df):
+    def create_network_info(self, df):
         network_info = {}
         # Bus reference
         _dict =  { self.format_string(df.iloc[0,i]) : [df.iloc[1,i]]
@@ -261,9 +261,19 @@ class Extractor:
         columns = df.iloc[10,:].dropna().unique().tolist()
         columns[columns.index('ohm/km'):] = []
         df_title = self.format_string(df.iloc[9,0])
-        _dict = { self.format_string(column): df.iloc[12:,i].dropna().tolist() for i, column in enumerate(columns)}
+        _dict = { self.format_string(column): df.iloc[11:,i].dropna().tolist() for i, column in enumerate(columns)}
         network_info[df_title] = pd.DataFrame(_dict)
-        return network_info
+        # Cable characteristics.
+        # TODO
+        # Initialize the Info object.
+        new_info = classes.Info(
+            branch_info=network_info['branch_info'],
+            bus_reference=network_info['bus_reference'],
+            voltage_limits=network_info['voltage_limits'],
+            pu_values=network_info['pu_values'],
+            cables_characteristics=None
+            )
+        return new_info
     def create_simulation_periods(self, df):
         return df[df['Unnamed: 2'] == 'Simulation Periods']['Unnamed: 3'].values[0]
     def create_periods_duration_min(self, df):
