@@ -4,6 +4,8 @@ import os
 from classes import Network
 from extractor import Extractor
 import pandapower as pp
+from pandapower.plotting.plotly import simple_plotly
+from pandapower.plotting.plotly import pf_res_plotly
 # def main():
 #     # Excel file location
 #     file_location = 'data/raw/Data_Example.xlsx'
@@ -79,7 +81,7 @@ network = Network(
     charging_station_list = extractor.create_charging_stations_list(raw_charging_station_sheet),
     peer_list = extractor.create_peers_list(raw_peers_sheet)
 )
-# %% Doing now
+#  Doing now
 # create pandapower network
 # Create empty network.
 net = pp.create_empty_network()
@@ -87,6 +89,7 @@ net = pp.create_empty_network()
 branch_info = network.info.branch_info
 for bus_num in branch_info.component_n.values:
     pp.create_bus(net, vn_kv=20.0, index=bus_num)
+pp.create_bus(net, vn_kv=20.0, index=37) # TODO remove this
 # External grid.
 pp.create_ext_grid(net, bus=1, vm_pu=1.0)
 # Create tge loads from network.load_list.
@@ -108,5 +111,21 @@ for i, storage in enumerate(network.storage_list):
     p_mw = storage.p_charge_max_kw / 1000
     max_e_mwh = storage.energy_capacity_kvah / 1000
     pp.create_storage(net, bus=bus, p_mw=p_mw, max_e_mwh=max_e_mwh, name=name)
+# Create lines from network.info.branch_info.
+for row in branch_info.itertuples():
+    from_bus = row.bus_out
+    to_bus = row.bus_in
+    length_km = row.distance_km
+    r_ohm_per_km = row.r
+    x_ohm_per_km = row.x
+    c_nf_per_km = row.c
+    name = 'line_' + str(row.bus_out) + '_to_' + str(row.bus_in) 
+    pp.create_line_from_parameters(
+        net, from_bus=from_bus, to_bus=to_bus, 
+        length_km=length_km, r_ohm_per_km=r_ohm_per_km,
+        x_ohm_per_km=x_ohm_per_km, c_nf_per_km=c_nf_per_km, max_i_ka=1, name=name
+        )
+fig = simple_plotly(net,respect_switches=True, figsize=1)  
+fig = pf_res_plotly(net, figsize=1)
 #%%
 # Merge info sheet to general info shee

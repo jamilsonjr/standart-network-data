@@ -241,14 +241,20 @@ class Extractor:
         _dict = { self.format_string(column): df.iloc[11:,i].dropna().tolist() for i, column in enumerate(columns)}
         network_info[df_title] = pd.DataFrame(_dict)
         # Cable characteristics.
-        # TODO
+        df_title = self.format_string(df['Unnamed: 10'][9])
+        columns = df.iloc[11,:].dropna().unique().tolist()
+        columns[:8] = []
+        columns = [self.format_string(col) for col in columns]
+        columns = ['name'] + columns
+        _dict = {column: df.iloc[12:,10+i].dropna().tolist() for i, column in enumerate(columns)}
+        network_info[df_title] = pd.DataFrame(_dict)
         # Initialize the Info object.
         new_info = classes.Info(
             branch_info=network_info['branch_info'],
             bus_reference=network_info['bus_reference'],
             voltage_limits=network_info['voltage_limits'],
             pu_values=network_info['pu_values'],
-            cables_characteristics=None
+            cable_characteristics=network_info['cables_characteristics']
             )
         return new_info
     def create_simulation_periods(self, df):

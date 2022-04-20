@@ -136,12 +136,12 @@ class Peer:
         self.sell_price_mu = sell_price_mu
 # class info, which contains the properties: branch_info, bus_reference, voltage_limits, pu_values and cables_characteristics.
 class Info:
-    def __init__(self, branch_info=None, bus_reference=None, voltage_limits=None, pu_values=None, cables_characteristics=None):
+    def __init__(self, branch_info=None, bus_reference=None, voltage_limits=None, pu_values=None, cable_characteristics=None):
         self.branch_info = branch_info
         self.bus_reference = bus_reference
         self.voltage_limits = voltage_limits
         self.pu_values = pu_values
-        self.cables_characteristics = cables_characteristics
+        self.cables_characteristics = cable_characteristics
 ##############################################################################
 ############################## Data: Full Excell #############################
 ##############################################################################
