@@ -1,4 +1,8 @@
 #%%
+import pandas as pd
+import pandapower as pp
+from pandapower.plotting.plotly import simple_plotly
+from pandapower.plotting.plotly import pf_res_plotly
 from abc import ABC, abstractmethod
 ##############################################################################
 ############################## Element Types #################################
@@ -161,3 +165,66 @@ class Network:
         self.storage_list = storage_list
         self.charging_station_list = charging_station_list
         self.peer_list = peer_list
+    # Methods.
+    def create_pandapower_model(self):
+        """Method that created a pandapower network model.
+        """
+        net = pp.create_empty_network()
+        # Create the busses.
+        busses = pd.concat([self.info.branch_info.bus_out, self.info.branch_info.bus_in], axis=0).unique()
+        for bus in busses:
+            name = 'bus_' + str(bus)
+            pp.create_bus(net, vn_kv=20.0, index=bus, name=name)
+        # External grid.
+        pp.create_bus(net, vn_kv=63, index=0, name=name)
+        pp.create_ext_grid(net, bus=0, vm_pu=1.0)
+        # Create transformer.
+        pp.create_transformer(net, hv_bus=0, lv_bus=1, std_type='0.4 MVA 20/0.4 kV')
+        # Create tge loads from network.load_list.
+        for i, load in enumerate(self.load_list):
+            name = load.id
+            bus = load.internal_bus_location
+            p_mw = load.power_contracted_kw / 1000
+            q_mvar  = p_mw * load.tg_phi
+            pp.create_load(net, bus=bus, p_mw=p_mw, q_mvar=q_mvar, name=name)
+        # Create generators from network.generator_list.
+        for i, generator in enumerate(self.generator_list):
+            bus = generator.internal_bus_location
+            p_mw = generator.p_max_kw / 1000
+            q_mvar = generator.q_max_kvar / 1000
+            pp.create_sgen(net, bus=bus, p_mw=p_mw, q_mvar=q_mvar, name=name)    
+        # Create the storage from network.storage_list.
+        for i, storage in enumerate(self.storage_list):
+            bus = storage.internal_bus_location
+            p_mw = storage.p_charge_max_kw / 1000
+            max_e_mwh = storage.energy_capacity_kvah / 1000
+            pp.create_storage(net, bus=bus, p_mw=p_mw, max_e_mwh=max_e_mwh, name=name)
+        # Create lines from network.info.branch_info.
+        for row in self.info.branch_info.itertuples():
+            from_bus = row.bus_out
+            to_bus = row.bus_in
+            length_km = row.distance_km
+            r_ohm_per_km = row.r
+            x_ohm_per_km = row.x
+            c_nf_per_km = row.c
+            name = 'line_' + str(row.bus_out) + '_to_' + str(row.bus_in) 
+            pp.create_line_from_parameters(
+                net, from_bus=from_bus, to_bus=to_bus, 
+                length_km=length_km, r_ohm_per_km=r_ohm_per_km,
+                x_ohm_per_km=x_ohm_per_km, c_nf_per_km=c_nf_per_km, max_i_ka=1, name=name
+                )
+        self.net_model = net
+    def get_pandapower_model(self):
+        """Method that returns the model of the network.
+        Returns:
+            pandapower.net: Model of the network.
+        """
+        return self.net_model
+    def plot_network(self, power_flow=True):
+        """Function that plots the network. 
+        Args:
+            power_flow (bool, optional): Perfoms a power flow on the network. Defaults to True.
+        """
+        fig = simple_plotly(self.net_model, respect_switches=True, figsize=1)  
+        if power_flow:
+            fig = pf_res_plotly(self.net_model, figsize=1)
